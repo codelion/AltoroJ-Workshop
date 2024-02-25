@@ -26,6 +26,7 @@ IBM AltoroJ
 	<jsp:include page="/bank/membertoc.jspf"/>
 	<td valign="top" colspan="3" class="bb">
 		<%@page import="com.ibm.security.appscan.altoromutual.util.ServletUtil"%>
+		<%@page import="org.apache.commons.text.StringEscapeUtils"%>
 		
 		<%
 		String[] users = ServletUtil.getBankUsers();
@@ -58,7 +59,7 @@ IBM AltoroJ
 		java.lang.String error = (String)request.getSession().getAttribute("message");
 		
 		if (error != null && error.trim().length() > 0){
-			out.print(error);
+			out.print(StringEscapeUtils.escapeHtml4(error));
 		}
 		%>
 		</span></p>
@@ -87,7 +88,7 @@ IBM AltoroJ
 		    <td>
 		      	<select name="username" id="username" size="1">
 					<% for (String user:users){ %>
-					<option value="<%=user%>"><%=user%></option>
+					<option value="<%=StringEscapeUtils.escapeHtml4(user)%>"><%=StringEscapeUtils.escapeHtml4(user)%></option>
 					<%} %>
 				</select>
 		    </td>
@@ -123,7 +124,7 @@ IBM AltoroJ
 		    <td>
 		        <select name="username" id="username" size="1">
 					<% for (String user:users){ %>
-					<option value="<%=user%>"><%=user%></option>
+					<option value="<%=StringEscapeUtils.escapeHtml4(user)%>"><%=StringEscapeUtils.escapeHtml4(user)%></option>
 					<%} %>
 				</select>
 		    </td>
