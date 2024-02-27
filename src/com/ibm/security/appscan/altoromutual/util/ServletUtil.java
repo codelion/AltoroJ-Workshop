@@ -362,7 +362,7 @@ public class ServletUtil {
 			if (user == null)
 				return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Error checking if user is logged in: " + e.getMessage());
 			return false;
 		}
 		

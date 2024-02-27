@@ -77,8 +77,7 @@ public class DBUtil {
 				Context environmentContext = (Context) initialContext.lookup("java:comp/env");
 				dataSource = (DataSource)environmentContext.lookup(dataSourceName.trim());
 			} catch (Exception e) {
-				e.printStackTrace();
-				Log4AltoroJ.getInstance().logError(e.getMessage());		
+				Log4AltoroJ.getInstance().logError(e.getMessage());
 			}
 			
 		/* Initialize connection to the integrated Apache Derby DB*/	
@@ -439,7 +438,7 @@ public class DBUtil {
 			
 			return users.toArray(new String[users.size()]);
 		} catch (SQLException e){
-			e.printStackTrace();
+			System.out.println("Error fetching bank usernames: " + e.getMessage());
 			return new String[0];
 		}
 	}
@@ -515,8 +514,12 @@ public class DBUtil {
 	public static long storeFeedback(String name, String email, String subject, String comments) {
 		try{ 
 			Connection connection = getConnection();
-			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO FEEDBACK (NAME,EMAIL,SUBJECT,COMMENTS) VALUES ('"+name+"', '"+email+"', '"+subject+"', '"+comments+"')", Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO FEEDBACK (NAME,EMAIL,SUBJECT,COMMENTS) VALUES (?, ?, ?, ?)");
+			statement.setString(1, name);
+			statement.setString(2, email);
+			statement.setString(3, subject);
+			statement.setString(4, comments);
+			statement.execute();
 			ResultSet rs= statement.getGeneratedKeys();
 			long id = -1;
 			if (rs.next()){
