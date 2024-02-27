@@ -345,7 +345,7 @@ public class ServletUtil {
 		    String accountStringList = Account.toBase64List(accounts);
 		    Cookie accountCookie = new Cookie(ServletUtil.ALTORO_COOKIE, accountStringList);
 			session.setAttribute(ServletUtil.SESSION_ATTR_USER, user);
-##			accountCookie.setSecure(false);  // create an error related with accountCookie
+##			accountCookie.setSecure(true);  // create an error related with accountCookie
 		    return accountCookie;
 		}
 		catch(SQLException e){
@@ -362,7 +362,6 @@ public class ServletUtil {
 			if (user == null)
 				return false;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return false;
 		}
 		

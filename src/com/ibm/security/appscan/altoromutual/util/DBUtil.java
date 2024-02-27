@@ -77,8 +77,7 @@ public class DBUtil {
 				Context environmentContext = (Context) initialContext.lookup("java:comp/env");
 				dataSource = (DataSource)environmentContext.lookup(dataSourceName.trim());
 			} catch (Exception e) {
-				e.printStackTrace();
-				Log4AltoroJ.getInstance().logError(e.getMessage());		
+				Log4AltoroJ.getInstance().logError(e.getMessage());
 			}
 			
 		/* Initialize connection to the integrated Apache Derby DB*/	
@@ -91,7 +90,6 @@ public class DBUtil {
 				Class.forName(DRIVER).newInstance();
 			} catch (Exception e) {
 				Log4AltoroJ.getInstance().logError(e.getMessage());
-				e.printStackTrace();
 			}
 		}
 	}
@@ -439,7 +437,7 @@ public class DBUtil {
 			
 			return users.toArray(new String[users.size()]);
 		} catch (SQLException e){
-			e.printStackTrace();
+			System.out.println("Error fetching bank usernames: " + e.getMessage());
 			return new String[0];
 		}
 	}
