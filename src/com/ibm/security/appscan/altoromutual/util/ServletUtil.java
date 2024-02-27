@@ -135,8 +135,18 @@ public class ServletUtil {
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			public static String[] searchArticles(String query, String path) {
+				ArrayList<String> results = new ArrayList<String>();
+		
+				File file = new File(path);
+				Document document;
+				try {
+					document = DocumentBuilderFactory.newInstance()
+							.newDocumentBuilder().parse(file);
+					// root node
+					NodeList nodes = document.getElementsByTagName("news");
+		
+					if (nodes.getLength() ==		}
 
 		if (results.size() == 0)
 			return null;
@@ -344,16 +354,7 @@ public class ServletUtil {
 			Account[] accounts = user.getAccounts();
 		    String accountStringList = Account.toBase64List(accounts);
 		    Cookie accountCookie = new Cookie(ServletUtil.ALTORO_COOKIE, accountStringList);
-			session.setAttribute(ServletUtil.SESSION_ATTR_USER, user);
-##			accountCookie.setSecure(false);  // create an error related with accountCookie
-		    return accountCookie;
-		}
-		catch(SQLException e){
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
+			session.setAttribute(ServletUtil.SESSION_ATTR_USER,	
 	static public boolean isLoggedin(HttpServletRequest request){
 		try {
 			// Check user is logged in
@@ -362,12 +363,8 @@ public class ServletUtil {
 			if (user == null)
 				return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Error checking if user is logged in: " + e.getMessage());
 			return false;
-		}
-		
-		return true;
-	}
 	
 	static public User getUser(HttpServletRequest request){
 		User user = (User)request.getSession().getAttribute(ServletUtil.SESSION_ATTR_USER);
