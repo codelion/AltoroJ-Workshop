@@ -12,6 +12,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
 import com.ibm.security.appscan.altoromutual.model.Account;
 import com.ibm.security.appscan.altoromutual.model.User;
+import java.security.SecureRandom;
 
 public class OperationsUtil {
 
@@ -143,11 +144,12 @@ public class OperationsUtil {
 		
 	}
 	
+	
 	public static String makeRandomString() {
 	    byte[] array = new byte[7]; // length is bounded by 7
-	    new Random().nextBytes(array);
+	    new SecureRandom().nextBytes(array);
 	    String generatedString = new String(array, Charset.forName("UTF-8"));
-	 
+	
 	    return generatedString;
 	}
 	

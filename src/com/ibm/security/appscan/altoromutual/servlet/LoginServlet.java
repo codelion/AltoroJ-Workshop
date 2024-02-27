@@ -52,7 +52,10 @@ public class LoginServlet extends HttpServlet {
 		//log out
 		try {
 			HttpSession session = request.getSession(false);
-			session.removeAttribute(ServletUtil.SESSION_ATTR_USER);
+			if (session != null) {
+				session.removeAttribute(ServletUtil.SESSION_ATTR_USER);
+				session.invalidate();
+			}
 		} catch (Exception e){
 			// do nothing
 		} finally {
@@ -92,11 +95,14 @@ public class LoginServlet extends HttpServlet {
 		//Handle the cookie using ServletUtil.establishSession(String)
 		try{
 			Cookie accountCookie = ServletUtil.establishSession(username,session);
+			accountCookie.setHttpOnly(true);
+			accountCookie.setSecure(true);
 			response.addCookie(accountCookie);
 			response.sendRedirect(request.getContextPath()+"/bank/main.jsp");
 			}
 		catch (Exception ex){
-			ex.printStackTrace();
+			// Log the exception, do not print stack trace
+			Log4AltoroJ.getInstance().logError("An error occurred while establishing session: " + ex.getMessage());
 			response.sendError(500);
 		}
 			
