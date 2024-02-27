@@ -9,14 +9,27 @@
   </style>
   <script>
 
+    function validateURL(url) {
+      var parser = document.createElement('a');
+      parser.href = url;
+
+      var currentLocation = window.location;
+      if (parser.hostname === currentLocation.hostname && parser.protocol === currentLocation.protocol) {
+        return true;
+      }
+      return false;
+    }
+
     function go() {
 	    var iPos = document.URL.indexOf("url=")+4;
-    	var sDst = document.URL.substring(iPos,document.URL.length); 
-        if (window.opener) {
-      		window.opener.location.href = sDst;
-      		cl();
-        } else {
-        	window.location.href = sDst;
+    	var sDst = decodeURIComponent(document.URL.substring(iPos,document.URL.length)); 
+        if (validateURL(sDst)) {
+          if (window.opener) {
+            window.opener.location.href = sDst;
+            cl();
+          } else {
+            window.location.href = sDst;
+          }
         }
     }
 
@@ -25,14 +38,14 @@
     }
 
     var iPos = document.URL.indexOf("url=")+4;
-  	var sDst = document.URL.substring(iPos,document.URL.length);
+  	var sDst = decodeURIComponent(document.URL.substring(iPos,document.URL.length));
     // if redirection is in the application's domain, don't ask for authorization
-	if ( sDst.indexOf("http") == 0 && sDst.indexOf(document.location.hostname) != -1 ) {
+	if (validateURL(sDst)) {
 		if (window.opener) {
-      		window.opener.location.href = "http" + sDst.substring(4);
+      		window.opener.location.href = sDst;
       		cl();
         } else {
-        	window.location.href = "http" + sDst.substring(4);
+        	window.location.href = sDst;
         }
 	}
 
@@ -64,10 +77,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-

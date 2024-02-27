@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 
 <%
 /**
@@ -37,7 +38,7 @@ IBM AltoroJ
 			  <table>
 			    <tr>
 			      <td colspan="2">
-			        <div style="font-weight: bold; font-size: 12px; color: red;" id="message"><%=(request.getAttribute("message_subscribe")!=null)?request.getAttribute("message_subscribe"):"" %></div>
+			        <div style="font-weight: bold; font-size: 12px; color: red;" id="message"><%= StringEscapeUtils.escapeHtml4((String)request.getAttribute("message_subscribe")) %></div>
 			      </td>
 			    </tr>
 			    <tr>

@@ -44,7 +44,7 @@ IBM AltoroJ
 			
 			if (error != null && error.trim().length() > 0){
 				request.getSession().removeAttribute("loginError");
-				out.print(error);
+				out.print(org.apache.commons.lang.StringEscapeUtils.escapeHtml(error));
 			}
 			%>
 		</span></p>
