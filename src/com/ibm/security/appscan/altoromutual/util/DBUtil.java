@@ -209,21 +209,24 @@ public class DBUtil {
 	 * @return true if valid user, false otherwise
 	 * @throws SQLException
 	 */
-	public static boolean isValidUser(String user, String password) throws SQLException{
-		if (user == null || password == null || user.trim().length() == 0 || password.trim().length() == 0)
-			return false; 
-		
-		Connection connection = getConnection();
-		Statement statement = connection.createStatement();
-		
-		ResultSet resultSet =statement.executeQuery("SELECT COUNT(*)FROM PEOPLE WHERE USER_ID = '"+ user +"' AND PASSWORD='" + password + "'"); /* BAD - user input should always be sanitized */
-		
-		if (resultSet.next()){
-			
-				if (resultSet.getInt(1) > 0)
-					return true;
-		}
-		return false;
+	public static boolean isValidUser(String user, String password) throws SQLException {
+	    if (user == null || password == null || user.trim().length() == 0 || password.trim().length() == 0)
+	        return false;
+	
+	    Connection connection = getConnection();
+	    PreparedStatement preparedStatement = connection.prepareStatement(
+	        "SELECT COUNT(*) FROM PEOPLE WHERE USER_ID = ? AND PASSWORD = ?");
+	    
+	    preparedStatement.setString(1, user);
+	    preparedStatement.setString(2, password);
+	
+	    ResultSet resultSet = preparedStatement.executeQuery();
+	
+	    if (resultSet.next()) {
+	        if (resultSet.getInt(1) > 0)
+	            return true;
+	    }
+	    return false;
 	}
 	
 
@@ -233,32 +236,33 @@ public class DBUtil {
 	 * @return user information
 	 * @throws SQLException
 	 */
-	public static User getUserInfo(String username) throws SQLException{
-		if (username == null || username.trim().length() == 0)
-			return null; 
-		
-		Connection connection = getConnection();
-		Statement statement = connection.createStatement();
-		ResultSet resultSet =statement.executeQuery("SELECT FIRST_NAME,LAST_NAME,ROLE FROM PEOPLE WHERE USER_ID = '"+ username +"' "); /* BAD - user input should always be sanitized */
-
-		String firstName = null;
-		String lastName = null;
-		String roleString = null;
-		if (resultSet.next()){
-			firstName = resultSet.getString("FIRST_NAME");
-			lastName = resultSet.getString("LAST_NAME");
-			roleString = resultSet.getString("ROLE");
-		}
-		
-		if (firstName == null || lastName == null)
-			return null;
-		
-		User user = new User(username, firstName, lastName);
-		
-		if (roleString.equalsIgnoreCase("admin"))
-			user.setRole(Role.Admin);
-		
-		return user;
+	public static User getUserInfo(String username) throws SQLException {
+	    if (username == null || username.trim().length() == 0)
+	        return null;
+	
+	    Connection connection = getConnection();
+	    PreparedStatement preparedStatement = connection.prepareStatement("SELECT FIRST_NAME,LAST_NAME,ROLE FROM PEOPLE WHERE USER_ID = ?");
+	    preparedStatement.setString(1, username);
+	    ResultSet resultSet = preparedStatement.executeQuery();
+	
+	    String firstName = null;
+	    String lastName = null;
+	    String roleString = null;
+	    if (resultSet.next()) {
+	        firstName = resultSet.getString("FIRST_NAME");
+	        lastName = resultSet.getString("LAST_NAME");
+	        roleString = resultSet.getString("ROLE");
+	    }
+	
+	    if (firstName == null || lastName == null)
+	        return null;
+	
+	    User user = new User(username, firstName, lastName);
+	
+	    if (roleString.equalsIgnoreCase("admin"))
+	        user.setRole(Role.Admin);
+	
+	    return user;
 	}
 
 	/**
@@ -272,10 +276,11 @@ public class DBUtil {
 			return null; 
 		
 		Connection connection = getConnection();
-		Statement statement = connection.createStatement();
-		ResultSet resultSet =statement.executeQuery("SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE FROM ACCOUNTS WHERE USERID = '"+ username +"' "); /* BAD - user input should always be sanitized */
+		PreparedStatement preparedStatement = connection.prepareStatement("SELECT ACCOUNT_ID, ACCOUNT_NAME, BALANCE FROM ACCOUNTS WHERE USERID = ?");
+		preparedStatement.setString(1, username);
+		ResultSet resultSet = preparedStatement.executeQuery();
 
-		ArrayList<Account> accounts = new ArrayList<Account>(3);
+		ArrayList<Account> accounts = new ArrayList<Account>();
 		while (resultSet.next()){
 			long accountId = resultSet.getLong("ACCOUNT_ID");
 			String name = resultSet.getString("ACCOUNT_NAME");
@@ -467,8 +472,11 @@ public class DBUtil {
 	public static String addAccount(String username, String acctType) {
 		try {
 			Connection connection = getConnection();
-			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) VALUES ('"+username+"','"+acctType+"', 0)");
+			String sql = "INSERT INTO ACCOUNTS (USERID,ACCOUNT_NAME,BALANCE) VALUES (?, ?, 0)";
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, username);
+			preparedStatement.setString(2, acctType);
+			preparedStatement.executeUpdate();
 			return null;
 		} catch (SQLException e){
 			return e.toString();
@@ -490,42 +498,53 @@ public class DBUtil {
 	public static String addUser(String username, String password, String firstname, String lastname) {
 		try {
 			Connection connection = getConnection();
-			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO PEOPLE (USER_ID,PASSWORD,FIRST_NAME,LAST_NAME,ROLE) VALUES ('"+username+"','"+password+"', '"+firstname+"', '"+lastname+"','user')");
+			String sql = "INSERT INTO PEOPLE (USER_ID, PASSWORD, FIRST_NAME, LAST_NAME, ROLE) VALUES (?, ?, ?, ?, 'user')";
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, username);
+			preparedStatement.setString(2, password);
+			preparedStatement.setString(3, firstname);
+			preparedStatement.setString(4, lastname);
+			preparedStatement.executeUpdate();
 			return null;
-		} catch (SQLException e){
+		} catch (SQLException e) {
 			return e.toString();
-			
 		}
 	}
 	
 	public static String changePassword(String username, String password) {
 		try {
 			Connection connection = getConnection();
-			Statement statement = connection.createStatement();
-			statement.execute("UPDATE PEOPLE SET PASSWORD = '"+ password +"' WHERE USER_ID = '"+username+"'");
+			String sql = "UPDATE PEOPLE SET PASSWORD = ? WHERE USER_ID = ?";
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, password);
+			preparedStatement.setString(2, username);
+			preparedStatement.executeUpdate();
 			return null;
 		} catch (SQLException e){
 			return e.toString();
-			
 		}
 	}
 
 	
 	public static long storeFeedback(String name, String email, String subject, String comments) {
-		try{ 
-			Connection connection = getConnection();
-			Statement statement = connection.createStatement();
-			statement.execute("INSERT INTO FEEDBACK (NAME,EMAIL,SUBJECT,COMMENTS) VALUES ('"+name+"', '"+email+"', '"+subject+"', '"+comments+"')", Statement.RETURN_GENERATED_KEYS);
-			ResultSet rs= statement.getGeneratedKeys();
-			long id = -1;
-			if (rs.next()){
-				id = rs.getLong(1);
-			}
-			return id;
-		} catch (SQLException e){
-			Log4AltoroJ.getInstance().logError(e.getMessage());
-			return -1;
-		}
+	    try {
+	        Connection connection = getConnection();
+	        String sql = "INSERT INTO FEEDBACK (NAME, EMAIL, SUBJECT, COMMENTS) VALUES (?, ?, ?, ?)";
+	        PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        preparedStatement.setString(1, name);
+	        preparedStatement.setString(2, email);
+	        preparedStatement.setString(3, subject);
+	        preparedStatement.setString(4, comments);
+	        preparedStatement.execute();
+	        ResultSet rs = preparedStatement.getGeneratedKeys();
+	        long id = -1;
+	        if (rs.next()) {
+	            id = rs.getLong(1);
+	        }
+	        return id;
+	    } catch (SQLException e) {
+	        Log4AltoroJ.getInstance().logError(e.getMessage());
+	        return -1;
+	    }
 	}
 }

@@ -98,7 +98,7 @@ public class SurveyServlet extends HttpServlet {
 			request.getSession().setAttribute("surveyStep", step);
 		}
 		response.setContentType("text/html");
-		response.getWriter().write(content);
+		response.getWriter().write(org.apache.commons.text.StringEscapeUtils.escapeHtml4(content));
 		response.getWriter().flush();
 		
 	}
