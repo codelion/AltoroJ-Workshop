@@ -116,7 +116,7 @@ public class DBUtil {
 			// otherwise initialize connection to the built-in Derby database
 			try {
 				//attempt to connect to the database
-				instance.connection = DriverManager.getConnection(PROTOCOL+"altoro");
+				instance.connection = DriverManager.getConnection(PROTOCOL+"altoro", DB_USERNAME, DB_PASSWORD);
 				
 				if (ServletUtil.isAppPropertyTrue("database.reinitializeOnStart")){
 					instance.initDB();
@@ -124,7 +124,7 @@ public class DBUtil {
 			} catch (SQLException e){
 				//if database does not exist, create it an initialize it
 				if (e.getErrorCode() == 40000){
-					instance.connection = DriverManager.getConnection(PROTOCOL+"altoro;create=true");
+					instance.connection = DriverManager.getConnection(PROTOCOL+"altoro;create=true", DB_USERNAME, DB_PASSWORD);
 					instance.initDB();
 				//otherwise pass along the exception
 				} else {
