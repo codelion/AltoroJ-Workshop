@@ -115,9 +115,21 @@ public class AdminServlet extends HttpServlet {
 		else
 			message = "Requested operation has completed successfully.";
 		
-		request.getSession().setAttribute("message", message);
+		request.getSession().setAttribute("message", HTMLEntityEncode(message));
 		response.sendRedirect("admin.jsp");
 		return ;
 	}
 
+	private String HTMLEntityEncode(String s){
+		StringBuilder out = new StringBuilder();
+		for(int i=0; i<s.length(); i++){
+			char c = s.charAt(i);
+			if(c > 127 || c=='"' || c=='<' || c=='>'){
+			   out.append("&#"+(int)c+";");
+			}else{
+				out.append(c);
+			}
+		}
+		return out.toString();
+	}
 }
